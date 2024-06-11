@@ -183,12 +183,12 @@ namespace InstallerStudio.Providers
 
             if (setup.IsX86)
             {
-                items.Add("IsX86");
+                items.Add("IsX86OS");
             }
 
             if (setup.IsX64)
             {
-                items.Add("IsX64");
+                items.Add("IsX64OS");
             }
 
             if (setup.IsArm64)
