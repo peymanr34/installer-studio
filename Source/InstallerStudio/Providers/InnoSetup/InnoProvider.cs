@@ -10,7 +10,7 @@ namespace InstallerStudio.Providers.InnoSetup
 {
     public static class InnoProvider
     {
-        public static string GetCompilerPath()
+        public static InnoCompiler GetCompiler()
         {
             var baseKeyPath = "SOFTWARE\\";
 
@@ -23,9 +23,14 @@ namespace InstallerStudio.Providers.InnoSetup
 
             using var key = Registry.LocalMachine.OpenSubKey(keyPath);
 
-            if (key?.GetValue("InstallLocation") is string path)
+            if (key?.GetValue("InstallLocation") is string path &&
+                key?.GetValue("DisplayVersion") is string version)
             {
-                return Path.Join(path, "ISCC.exe");
+                return new InnoCompiler
+                {
+                    Path = Path.Join(path, "ISCC.exe"),
+                    Version = Version.Parse(version),
+                };
             }
 
             return null;

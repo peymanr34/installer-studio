@@ -45,13 +45,14 @@ namespace InstallerStudio.ViewModels
                 .First(x => x.Id == ProjectId);
 
             // Get the compiler.
-            var compiler = InnoProvider.GetCompilerPath();
+            var required = new Version(6, 3, 0);
+            var compiler = InnoProvider.GetCompiler();
 
-            if (!File.Exists(compiler))
+            if (!File.Exists(compiler.Path) || compiler.Version < required)
             {
                 var dialog = new ContentDialog
                 {
-                    Title = "Inno Setup 6.2+ is required",
+                    Title = "Inno Setup 6.3+ is required",
                     Content = "To publish the setup, you need to download and install Inno Setup separately. Would you like to download it now?",
                     DefaultButton = ContentDialogButton.Primary,
                     PrimaryButtonText = "Download",
@@ -102,7 +103,7 @@ namespace InstallerStudio.ViewModels
 
             try
             {
-                var success = await PublishAsync(project, file, compiler);
+                var success = await PublishAsync(project, file, compiler.Path);
 
                 if (success && OpenDirectoryOnFinished)
                 {
