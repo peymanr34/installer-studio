@@ -64,7 +64,23 @@ namespace InstallerStudio.ViewModels
             Context.SaveChanges();
 
             NewProjectName = string.Empty;
-            Load();
+
+            var item = new ProjectViewModel
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Version = project.Version,
+                Website = project.Website,
+                UniqueId = project.UniqueId,
+                SetupType = project.SetupType,
+                Publisher = project.Publisher,
+                Description = project.Description,
+            };
+
+            Items.Add(item);
+            OnPropertyChanged(nameof(Items));
+
+            SelectedItem = item;
         }
 
         [CommandInvalidate(nameof(NewProjectName))]
@@ -83,6 +99,7 @@ namespace InstallerStudio.ViewModels
             Context.SaveChanges();
 
             Items.Remove(SelectedItem);
+            OnPropertyChanged(nameof(Items));
         }
 
         [CommandInvalidate(nameof(SelectedItem))]
