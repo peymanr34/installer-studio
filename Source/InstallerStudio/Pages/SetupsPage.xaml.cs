@@ -1,8 +1,11 @@
 using System;
+using System.Linq;
 using InstallerStudio.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
 
 namespace InstallerStudio.Pages
 {
@@ -54,6 +57,24 @@ namespace InstallerStudio.Pages
             };
 
             await dialog.ShowAsync();
+        }
+
+        private void Grid_DragOver(object sender, DragEventArgs e)
+        {
+            e.AcceptedOperation = DataPackageOperation.Link;
+        }
+
+        private async void Grid_Drop(object sender, DragEventArgs e)
+        {
+            if (e.DataView.Contains(StandardDataFormats.StorageItems))
+            {
+                var items = await e.DataView.GetStorageItemsAsync();
+
+                foreach (var item in items.Cast<StorageFile>())
+                {
+                    await ViewModel.Create(item);
+                }
+            }
         }
     }
 }

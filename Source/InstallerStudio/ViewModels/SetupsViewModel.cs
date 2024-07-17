@@ -66,6 +66,14 @@ namespace InstallerStudio.ViewModels
             }
         }
 
+        public async Task Create(StorageFile file)
+        {
+            if (FileProvider.IsExtensionSupported(file.FileType))
+            {
+                await CreateCoreAsync(file);
+            }
+        }
+
         private async Task CreateCoreAsync(StorageFile file)
         {
             var existing = Context.Setups
@@ -83,8 +91,6 @@ namespace InstallerStudio.ViewModels
                 ProjectId = ProjectId,
             };
 
-            var extension = Path.GetExtension(file.Path);
-
             setup.IsX86 = SetupProvider.IsX86Setup(file.Name);
             setup.IsX64 = SetupProvider.IsX64Setup(file.Name);
             setup.IsArm64 = SetupProvider.IsArm64Setup(file.Name);
@@ -93,7 +99,7 @@ namespace InstallerStudio.ViewModels
             setup.Arguments = SetupProvider.GetSilentSwitch(setupType);
 
             if (setup.Arguments is null &&
-                extension.Equals(".exe", StringComparison.OrdinalIgnoreCase))
+                file.FileType.Equals(".exe", StringComparison.OrdinalIgnoreCase))
             {
                 setup.Arguments = "/S";
             }
@@ -125,6 +131,7 @@ namespace InstallerStudio.ViewModels
             item.Icon = await CacheProvider.GetCachedIconOrDefaultAsync(item.FilePath);
 
             Items.Add(item);
+            OnPropertyChanged(nameof(Items));
         }
 
         [Command(CanExecuteMethod = nameof(CanRemove))]
@@ -137,6 +144,7 @@ namespace InstallerStudio.ViewModels
             Context.SaveChanges();
 
             Items.Remove(SelectedItem);
+            OnPropertyChanged(nameof(Items));
         }
 
         [CommandInvalidate(nameof(SelectedItem))]

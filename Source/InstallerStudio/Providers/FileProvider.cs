@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -10,6 +11,12 @@ namespace InstallerStudio.Providers
 {
     public static class FileProvider
     {
+        public static bool IsExtensionSupported(string extension)
+        {
+            return Constants.SetupExtensions
+                .Any(x => x.Equals(extension, StringComparison.OrdinalIgnoreCase));
+        }
+
         public static FileOpenPicker GetFileOpenPicker(params string[] filters)
         {
             var picker = new FileOpenPicker
