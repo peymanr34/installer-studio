@@ -2,6 +2,8 @@
 {
     internal static class Constants
     {
+        public static readonly string[] SetupExtensions = [".exe", ".msi", ".cmd", ".bat"];
+
         /// <summary>
         /// See: https://github.com/microsoft/winget-pkgs/blob/master/Tools/YamlCreate.ps1#L726
         /// </summary>

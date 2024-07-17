@@ -107,7 +107,7 @@ namespace InstallerStudio.ViewModels
         [Command]
         public async Task Browse()
         {
-            var picker = FileProvider.GetFileOpenPicker(".exe", ".msi", ".cmd", ".bat");
+            var picker = FileProvider.GetFileOpenPicker(Constants.SetupExtensions);
             var file = await picker.PickSingleFileAsync();
 
             if (file is not null)

@@ -57,7 +57,7 @@ namespace InstallerStudio.ViewModels
         [Command]
         public async Task Create()
         {
-            var picker = FileProvider.GetFileOpenPicker(".exe", ".msi", ".cmd", ".bat");
+            var picker = FileProvider.GetFileOpenPicker(Constants.SetupExtensions);
             var files = await picker.PickMultipleFilesAsync();
 
             foreach (var file in files)
