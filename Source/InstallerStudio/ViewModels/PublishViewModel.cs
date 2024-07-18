@@ -48,7 +48,7 @@ namespace InstallerStudio.ViewModels
             var required = new Version(6, 3, 0);
             var compiler = InnoProvider.GetCompiler();
 
-            if (!File.Exists(compiler.Path) || compiler.Version < required)
+            if (!File.Exists(compiler?.Path) || compiler.Version < required)
             {
                 var dialog = new ContentDialog
                 {
@@ -59,6 +59,11 @@ namespace InstallerStudio.ViewModels
                     CloseButtonText = "Cancel",
                     XamlRoot = xamlRoot,
                 };
+
+                if (compiler?.Version is not null)
+                {
+                    dialog.Content += $"\n\nInstalled: {compiler.Version}";
+                }
 
                 var result = await dialog.ShowAsync();
 
