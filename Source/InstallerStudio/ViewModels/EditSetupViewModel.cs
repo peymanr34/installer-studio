@@ -45,6 +45,8 @@ namespace InstallerStudio.ViewModels
         [Property]
         private AdditionalViewModel _selectedItem;
 
+        public event EventHandler Saved;
+
         public void Load()
         {
             var model = Context.Setups
@@ -94,6 +96,7 @@ namespace InstallerStudio.ViewModels
             model.Description = Description;
 
             Context.SaveChanges();
+            OnSaved(null);
         }
 
         [CommandInvalidate(nameof(Name))]
@@ -183,6 +186,11 @@ namespace InstallerStudio.ViewModels
         public bool CanRemoveAdditional()
         {
             return SelectedItem is not null;
+        }
+
+        protected virtual void OnSaved(EventArgs e)
+        {
+            Saved?.Invoke(this, e);
         }
 
         private static AdditionalViewModel ToViewModel(SetupAdditional model) => new()
