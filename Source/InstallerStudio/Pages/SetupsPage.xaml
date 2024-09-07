@@ -119,6 +119,8 @@
                 ToolTipService.ToolTip="Options">
                 <Button.Flyout>
                     <MenuFlyout Placement="TopEdgeAlignedRight">
+                        <MenuFlyoutItem Click="Rate_Click" Text="Rate and review" />
+                        <MenuFlyoutSeparator />
                         <MenuFlyoutItem Click="About_Click" Text="About" />
                     </MenuFlyout>
                 </Button.Flyout>

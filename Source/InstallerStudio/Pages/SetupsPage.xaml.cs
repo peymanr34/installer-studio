@@ -5,7 +5,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Services.Store;
 using Windows.Storage;
+using WinRT.Interop;
 
 namespace InstallerStudio.Pages
 {
@@ -57,6 +59,16 @@ namespace InstallerStudio.Pages
             };
 
             await dialog.ShowAsync();
+        }
+
+        private async void Rate_Click(object sender, RoutedEventArgs e)
+        {
+            var context = StoreContext.GetDefault();
+
+            var hwnd = WindowNative.GetWindowHandle(App.MainWindow);
+            InitializeWithWindow.Initialize(context, hwnd);
+
+            await context.RequestRateAndReviewAppAsync();
         }
 
         private void Grid_DragOver(object sender, DragEventArgs e)
