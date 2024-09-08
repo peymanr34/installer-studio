@@ -114,6 +114,15 @@
                     </StackPanel>
                 </Button>
             </StackPanel>
+            <StackPanel
+                Grid.Column="1"
+                Orientation="Horizontal"
+                Visibility="{x:Bind ViewModel.IsSaved, Mode=OneWay}">
+                <SymbolIcon
+                    Margin="5,0"
+                    Symbol="Accept"
+                    ToolTipService.ToolTip="Project details has been saved." />
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

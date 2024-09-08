@@ -28,6 +28,9 @@ namespace InstallerStudio.ViewModels
         [Property]
         private SetupType _setupType;
 
+        [Property]
+        private bool _isSaved;
+
         public void Load()
         {
             var model = Context.Projects
@@ -55,6 +58,7 @@ namespace InstallerStudio.ViewModels
             model.Description = Description;
 
             Context.SaveChanges();
+            IsSaved = true;
         }
 
         [CommandInvalidate(nameof(Name))]
