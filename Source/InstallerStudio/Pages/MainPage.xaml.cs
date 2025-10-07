@@ -15,11 +15,16 @@ namespace InstallerStudio.Pages
             InitializeComponent();
         }
 
-        public ProjectViewModel ViewModel { get; private set; }
+        public MainViewModel ViewModel { get; private set; }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            ViewModel = e.Parameter as ProjectViewModel;
+            ViewModel = new MainViewModel
+            {
+                SelectedItem = navItemSetups,
+                Project = (ProjectViewModel)e.Parameter,
+            };
+
             base.OnNavigatedTo(e);
         }
 
@@ -48,7 +53,7 @@ namespace InstallerStudio.Pages
                 _ => null,
             };
 
-            Navigate(page, ViewModel);
+            Navigate(page, ViewModel.Project);
         }
 
         private void NavigationView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)

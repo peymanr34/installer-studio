@@ -16,6 +16,7 @@
             IsSettingsVisible="False"
             Loaded="NavigationView_Loaded"
             PaneDisplayMode="Top"
+            SelectedItem="{x:Bind ViewModel.SelectedItem}"
             SelectionChanged="NavigationView_SelectionChanged"
             SelectionFollowsFocus="Enabled">
             <NavigationView.MenuItems>
