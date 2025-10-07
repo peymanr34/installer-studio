@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Windows.Storage.Pickers;
 using Windows.Storage;
-using Windows.Storage.Pickers;
-using WinRT.Interop;
 
 namespace InstallerStudio.Providers
 {
@@ -19,14 +18,11 @@ namespace InstallerStudio.Providers
 
         public static FileOpenPicker GetFileOpenPicker(params string[] filters)
         {
-            var picker = new FileOpenPicker
+            var picker = new FileOpenPicker(App.MainWindow.AppWindow.Id)
             {
                 ViewMode = PickerViewMode.List,
                 SuggestedStartLocation = PickerLocationId.Desktop,
             };
-
-            var hWnd = WindowNative.GetWindowHandle(App.MainWindow);
-            InitializeWithWindow.Initialize(picker, hWnd);
 
             foreach (var filter in filters)
             {
@@ -38,14 +34,11 @@ namespace InstallerStudio.Providers
 
         public static FileSavePicker GetFileSavePicker(string suggestedFileName)
         {
-            var picker = new FileSavePicker
+            var picker = new FileSavePicker(App.MainWindow.AppWindow.Id)
             {
                 SuggestedFileName = suggestedFileName,
                 SuggestedStartLocation = PickerLocationId.Desktop,
             };
-
-            var hWnd = WindowNative.GetWindowHandle(App.MainWindow);
-            InitializeWithWindow.Initialize(picker, hWnd);
 
             picker.FileTypeChoices.Add("Setup", [".exe"]);
 
@@ -54,16 +47,11 @@ namespace InstallerStudio.Providers
 
         public static FolderPicker GetFolderPicker()
         {
-            var picker = new FolderPicker
+            var picker = new FolderPicker(App.MainWindow.AppWindow.Id)
             {
                 ViewMode = PickerViewMode.List,
                 SuggestedStartLocation = PickerLocationId.Desktop,
             };
-
-            var hWnd = WindowNative.GetWindowHandle(App.MainWindow);
-            InitializeWithWindow.Initialize(picker, hWnd);
-
-            picker.FileTypeFilter.Add("*");
 
             return picker;
         }

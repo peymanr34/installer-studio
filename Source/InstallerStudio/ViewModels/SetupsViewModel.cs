@@ -62,7 +62,8 @@ namespace InstallerStudio.ViewModels
 
             foreach (var file in files)
             {
-                await CreateCoreAsync(file);
+                var storageFile = await StorageFile.GetFileFromPathAsync(file.Path);
+                await CreateCoreAsync(storageFile);
             }
         }
 

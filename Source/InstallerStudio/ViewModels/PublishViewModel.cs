@@ -108,7 +108,7 @@ namespace InstallerStudio.ViewModels
 
             try
             {
-                var success = await PublishAsync(project, file, compiler.Path);
+                var success = await PublishAsync(project, file.Path, compiler.Path);
 
                 if (success && OpenDirectoryOnFinished)
                 {
@@ -132,8 +132,9 @@ namespace InstallerStudio.ViewModels
         public bool CanExecute()
             => !IsExecuting;
 
-        private async Task<bool> PublishAsync(Project project, StorageFile file, string compiler)
+        private async Task<bool> PublishAsync(Project project, string filePath, string compiler)
         {
+            var file = await StorageFile.GetFileFromPathAsync(filePath);
             var directory = await file.GetParentAsync();
 
             // Create and save the script to a temporary file.
