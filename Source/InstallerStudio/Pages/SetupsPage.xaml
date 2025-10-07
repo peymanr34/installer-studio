@@ -29,6 +29,10 @@
             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
             Text="Drop your setup files here."
             Visibility="{x:Bind ViewModel.Items, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}, ConverterParameter=True}" />
+        <ProgressBar
+            VerticalAlignment="Top"
+            IsIndeterminate="True"
+            Visibility="{x:Bind ViewModel.IsExecuting, Mode=OneWay}" />
         <ListView
             Grid.Row="0"
             Margin="5"

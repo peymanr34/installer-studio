@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -23,6 +24,9 @@ namespace InstallerStudio.ViewModels
 
         [Property]
         private SetupViewModel _selectedItem;
+
+        [Property]
+        private bool _isExecuting;
 
         public void Load(string search = null)
         {
@@ -60,22 +64,33 @@ namespace InstallerStudio.ViewModels
             var picker = FileProvider.GetFileOpenPicker(Constants.SetupExtensions);
             var files = await picker.PickMultipleFilesAsync();
 
+            IsExecuting = true;
+
             foreach (var file in files)
             {
                 var storageFile = await StorageFile.GetFileFromPathAsync(file.Path);
-                await CreateCoreAsync(storageFile);
+                await CreateSetup(storageFile);
             }
+
+            IsExecuting = false;
         }
 
-        public async Task Create(StorageFile file)
+        public async Task Create(IEnumerable<StorageFile> files)
         {
-            if (FileProvider.IsExtensionSupported(file.FileType))
+            IsExecuting = true;
+
+            foreach (var file in files)
             {
-                await CreateCoreAsync(file);
+                if (FileProvider.IsExtensionSupported(file.FileType))
+                {
+                    await CreateSetup(file);
+                }
             }
+
+            IsExecuting = false;
         }
 
-        private async Task CreateCoreAsync(StorageFile file)
+        private async Task CreateSetup(StorageFile file)
         {
             var existing = Context.Setups
                 .FirstOrDefault(x => x.ProjectId == ProjectId && x.FilePath == file.Path);
