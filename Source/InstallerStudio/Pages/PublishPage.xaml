@@ -8,13 +8,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
-
-    <Grid Margin="10">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <ProgressBar
+            VerticalAlignment="Top"
+            IsIndeterminate="True"
+            Visibility="{x:Bind ViewModel.IsExecuting, Mode=OneWay}" />
         <StackPanel
             Grid.Row="0"
             Margin="5"
@@ -47,9 +49,5 @@
                 </Paragraph>
             </RichTextBlock>
         </ScrollViewer>
-        <ProgressBar
-            Grid.Row="2"
-            IsIndeterminate="{x:Bind ViewModel.IsExecuting, Mode=OneWay}"
-            Visibility="{x:Bind ViewModel.IsExecuting, Mode=OneWay}" />
     </Grid>
 </Page>
