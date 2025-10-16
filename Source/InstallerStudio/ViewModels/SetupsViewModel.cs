@@ -114,12 +114,6 @@ namespace InstallerStudio.ViewModels
             var setupType = SetupProvider.GetSetupType(file.Path);
             setup.Arguments = SetupProvider.GetSilentSwitch(setupType);
 
-            if (setup.Arguments is null &&
-                file.FileType.Equals(".exe", StringComparison.OrdinalIgnoreCase))
-            {
-                setup.Arguments = "/S";
-            }
-
             if (setupType != SetupProvider.SetupType.Msi)
             {
                 var info = FileVersionInfo.GetVersionInfo(file.Path);
