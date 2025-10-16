@@ -10,6 +10,7 @@ namespace InstallerStudio.Providers
         {
             Unknown,
             InnoSetup,
+            Nullsoft,
             Msi,
         }
 
@@ -22,9 +23,16 @@ namespace InstallerStudio.Providers
                 return SetupType.Msi;
             }
 
-            if (InnoDetector.IsInnoSetup(filePath))
+            if (extension.Equals(".exe", StringComparison.OrdinalIgnoreCase))
             {
-                return SetupType.InnoSetup;
+                if (NullsoftDetector.IsNullsoft(filePath))
+                {
+                    return SetupType.Nullsoft;
+                }
+                else if (InnoDetector.IsInnoSetup(filePath))
+                {
+                    return SetupType.InnoSetup;
+                }
             }
 
             return SetupType.Unknown;
@@ -35,6 +43,7 @@ namespace InstallerStudio.Providers
             return type switch
             {
                 SetupType.InnoSetup => "/VERYSILENT",
+                SetupType.Nullsoft => "/S",
                 SetupType.Msi => "/quiet",
                 _ => null,
             };
