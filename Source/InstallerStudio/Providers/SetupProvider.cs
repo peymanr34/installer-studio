@@ -22,13 +22,7 @@ namespace InstallerStudio.Providers
                 return SetupType.Msi;
             }
 
-            // See: https://github.com/microsoft/winget-pkgs/blob/master/Tools/YamlCreate.ps1#L748
-            using var stream = File.OpenRead(filePath);
-            using var reader = new BinaryReader(stream);
-
-            var bytes = reader.ReadBytes(264);
-
-            if (bytes.SequenceEqual(Constants.InnoSetup))
+            if (InnoDetector.IsInnoSetup(filePath))
             {
                 return SetupType.InnoSetup;
             }
