@@ -19,7 +19,8 @@ namespace InstallerStudio.Providers
         {
             var extension = Path.GetExtension(filePath);
 
-            if (extension.Equals(".msi", StringComparison.OrdinalIgnoreCase))
+            if (extension.Equals(".msi", StringComparison.OrdinalIgnoreCase) &&
+                SetupDetector.IsMsi(filePath))
             {
                 return SetupType.Msi;
             }

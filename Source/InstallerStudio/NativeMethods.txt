@@ -1,3 +1,4 @@
 LoadLibraryExW
 EnumResourceNamesW
+MsiVerifyPackageW
 GetDpiForWindow
