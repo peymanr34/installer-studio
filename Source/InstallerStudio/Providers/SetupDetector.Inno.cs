@@ -8,7 +8,7 @@ using Windows.Win32.System.LibraryLoader;
 
 namespace InstallerStudio.Providers
 {
-    public static class InnoDetector
+    public static partial class SetupDetector
     {
         private const string _tableResId = "11111";
 

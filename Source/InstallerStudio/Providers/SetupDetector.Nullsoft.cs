@@ -5,7 +5,7 @@ using System.Reflection.PortableExecutable;
 
 namespace InstallerStudio.Providers
 {
-    public static class NullsoftDetector
+    public static partial class SetupDetector
     {
         private static readonly byte[] _signature1 = [0xDE, 0xAD, 0xBE, 0xEF];
         private static readonly byte[] _signature2 = [0xDE, 0xAD, 0xBE, 0xED];

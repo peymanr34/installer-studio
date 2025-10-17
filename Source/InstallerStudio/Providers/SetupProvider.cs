@@ -11,6 +11,7 @@ namespace InstallerStudio.Providers
             Unknown,
             InnoSetup,
             Nullsoft,
+            Burn,
             Msi,
         }
 
@@ -25,13 +26,17 @@ namespace InstallerStudio.Providers
 
             if (extension.Equals(".exe", StringComparison.OrdinalIgnoreCase))
             {
-                if (NullsoftDetector.IsNullsoft(filePath))
+                if (SetupDetector.IsNullsoft(filePath))
                 {
                     return SetupType.Nullsoft;
                 }
-                else if (InnoDetector.IsInnoSetup(filePath))
+                else if (SetupDetector.IsInnoSetup(filePath))
                 {
                     return SetupType.InnoSetup;
+                }
+                else if (SetupDetector.IsBurn(filePath))
+                {
+                    return SetupType.Burn;
                 }
             }
 
@@ -44,6 +49,7 @@ namespace InstallerStudio.Providers
             {
                 SetupType.InnoSetup => "/VERYSILENT",
                 SetupType.Nullsoft => "/S",
+                SetupType.Burn => "/quiet",
                 SetupType.Msi => "/quiet",
                 _ => null,
             };
