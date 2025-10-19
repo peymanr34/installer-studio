@@ -8,7 +8,7 @@ using Windows.Win32.System.LibraryLoader;
 
 namespace InstallerStudio.Providers
 {
-    public static partial class SetupDetector
+    public static partial class SetupProvider
     {
         private const string _tableResId = "11111";
 

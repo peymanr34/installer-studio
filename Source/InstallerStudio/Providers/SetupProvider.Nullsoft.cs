@@ -5,7 +5,7 @@ using System.Reflection.PortableExecutable;
 
 namespace InstallerStudio.Providers
 {
-    public static partial class SetupDetector
+    public static partial class SetupProvider
     {
         private static readonly byte[] _signature1 = [0xDE, 0xAD, 0xBE, 0xEF];
         private static readonly byte[] _signature2 = [0xDE, 0xAD, 0xBE, 0xED];

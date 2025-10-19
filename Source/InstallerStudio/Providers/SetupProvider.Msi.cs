@@ -2,7 +2,7 @@
 
 namespace InstallerStudio.Providers
 {
-    public static partial class SetupDetector
+    public static partial class SetupProvider
     {
         public static bool IsMsi(string filePath)
         {
