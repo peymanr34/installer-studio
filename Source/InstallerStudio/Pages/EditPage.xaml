@@ -92,12 +92,25 @@
                     Margin="5"
                     VerticalAlignment="Center"
                     Text="Arguments:" />
-                <TextBox
+                <Grid
                     Grid.Row="3"
                     Grid.Column="1"
                     Margin="5"
-                    AcceptsReturn="True"
-                    Text="{x:Bind ViewModel.Arguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+                        Margin="0,0,5,0"
+                        AcceptsReturn="True"
+                        Text="{x:Bind ViewModel.Arguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button
+                        Grid.Column="1"
+                        Command="{x:Bind ViewModel.RefreshArgsCommand}"
+                        Content="Refresh"
+                        ToolTipService.ToolTip="Refresh Arguments" />
+                </Grid>
                 <TextBlock
                     Grid.Row="4"
                     Grid.Column="0"

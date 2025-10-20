@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using InstallerStudio.Data;
@@ -117,6 +118,18 @@ namespace InstallerStudio.ViewModels
             {
                 FilePath = file.Path;
             }
+        }
+
+        [Command]
+        public void RefreshArgs()
+        {
+            if (!File.Exists(FilePath))
+            {
+                return;
+            }
+
+            var setupType = SetupProvider.GetSetupType(FilePath);
+            Arguments = SetupProvider.GetSilentSwitch(setupType);
         }
 
         [Command]
