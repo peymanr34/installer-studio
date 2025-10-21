@@ -26,13 +26,19 @@ namespace InstallerStudio.ViewModels
         private readonly StringBuilder _outputBuilder = new();
 
         [Property]
-        private bool _openDirectoryOnFinished;
+        [PropertyCallMethod(nameof(SaveSettings))]
+        private bool _openFolderOnPublished;
 
         [Property]
         private bool _isExecuting;
 
         public string Output
             => _outputBuilder.ToString();
+
+        public void Load()
+        {
+            LoadSettings();
+        }
 
         [Command(CanExecuteMethod = nameof(CanExecute))]
         public async Task Publish(object args)
@@ -110,7 +116,7 @@ namespace InstallerStudio.ViewModels
             {
                 var success = await PublishAsync(project, file.Path, compiler.Path);
 
-                if (success && OpenDirectoryOnFinished)
+                if (success && OpenFolderOnPublished)
                 {
                     FileProvider.OpenDirectorySelectFile(file.Path);
                 }
@@ -250,6 +256,19 @@ namespace InstallerStudio.ViewModels
         {
             _outputBuilder.AppendLine(value);
             OnPropertyChanged(nameof(Output));
+        }
+
+        private void LoadSettings()
+        {
+            // Set via the fields to avoid invoking the save method.
+            _openFolderOnPublished = App.Settings.GetValue(SettingsKeys.OpenFolderOnPublished, false);
+
+            OnPropertyChanged(nameof(OpenFolderOnPublished));
+        }
+
+        private void SaveSettings()
+        {
+            App.Settings.SetValue(SettingsKeys.OpenFolderOnPublished, OpenFolderOnPublished);
         }
     }
 }

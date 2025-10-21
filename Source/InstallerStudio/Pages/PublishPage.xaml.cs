@@ -19,6 +19,7 @@ namespace InstallerStudio.Pages
             var project = e.Parameter as ProjectViewModel;
 
             ViewModel = new PublishViewModel(App.Context, project.Id);
+            ViewModel.Load();
 
             base.OnNavigatedTo(e);
         }

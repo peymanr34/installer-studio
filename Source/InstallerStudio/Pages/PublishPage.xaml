@@ -34,7 +34,7 @@
             <CheckBox
                 Margin="5"
                 Content="Open folder when finished"
-                IsChecked="{x:Bind ViewModel.OpenDirectoryOnFinished, Mode=TwoWay}" />
+                IsChecked="{x:Bind ViewModel.OpenFolderOnPublished, Mode=TwoWay}" />
         </StackPanel>
         <ScrollViewer
             x:Name="scrollViewer"
