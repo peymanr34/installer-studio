@@ -58,7 +58,7 @@ namespace InstallerStudio.ViewModels
             LoadIcons();
         }
 
-        [Command]
+        [Command(CanExecuteMethod = nameof(CanCreate))]
         public async Task Create()
         {
             var picker = FileProvider.GetFileOpenPicker(Constants.SetupExtensions);
@@ -73,6 +73,12 @@ namespace InstallerStudio.ViewModels
             }
 
             IsExecuting = false;
+        }
+
+        [CommandInvalidate(nameof(IsExecuting))]
+        public bool CanCreate()
+        {
+            return !IsExecuting;
         }
 
         public async Task Create(IEnumerable<StorageFile> files)
