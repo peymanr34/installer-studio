@@ -84,7 +84,7 @@ namespace InstallerStudio.Pages
             if (e.DataView.Contains(StandardDataFormats.StorageItems))
             {
                 var items = await e.DataView.GetStorageItemsAsync();
-                await ViewModel.Create(items.Cast<StorageFile>());
+                await ViewModel.CreateRange(items.Cast<StorageFile>());
             }
         }
     }

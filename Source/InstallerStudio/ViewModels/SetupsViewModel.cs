@@ -64,15 +64,7 @@ namespace InstallerStudio.ViewModels
             var picker = FileProvider.GetFileOpenPicker(Constants.SetupExtensions);
             var files = await picker.PickMultipleFilesAsync();
 
-            IsExecuting = true;
-
-            foreach (var file in files)
-            {
-                var storageFile = await StorageFile.GetFileFromPathAsync(file.Path);
-                await CreateSetup(storageFile);
-            }
-
-            IsExecuting = false;
+            await CreateRange(files.Select(x => x.Path));
         }
 
         [CommandInvalidate(nameof(IsExecuting))]
@@ -81,7 +73,20 @@ namespace InstallerStudio.ViewModels
             return !IsExecuting;
         }
 
-        public async Task Create(IEnumerable<StorageFile> files)
+        public async Task CreateRange(IEnumerable<string> files)
+        {
+            IsExecuting = true;
+
+            foreach (var file in files)
+            {
+                var storageFile = await StorageFile.GetFileFromPathAsync(file);
+                await CreateSetup(storageFile);
+            }
+
+            IsExecuting = false;
+        }
+
+        public async Task CreateRange(IEnumerable<StorageFile> files)
         {
             IsExecuting = true;
 
