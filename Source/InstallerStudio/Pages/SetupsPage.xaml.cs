@@ -73,7 +73,10 @@ namespace InstallerStudio.Pages
 
         private void Grid_DragOver(object sender, DragEventArgs e)
         {
-            e.AcceptedOperation = DataPackageOperation.Link;
+            if (!ViewModel.IsExecuting)
+            {
+                e.AcceptedOperation = DataPackageOperation.Link;
+            }
         }
 
         private async void Grid_Drop(object sender, DragEventArgs e)
