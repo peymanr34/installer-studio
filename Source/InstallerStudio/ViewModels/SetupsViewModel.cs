@@ -125,7 +125,21 @@ namespace InstallerStudio.ViewModels
             var setupType = SetupProvider.GetSetupType(file.Path);
             setup.Arguments = SetupProvider.GetSilentSwitch(setupType);
 
-            if (setupType != SetupProvider.SetupType.Msi)
+            if (setupType == SetupProvider.SetupType.Msi)
+            {
+                var info = SetupProvider.GetMsiInfo(file.Path);
+
+                if (!string.IsNullOrEmpty(info?.Name))
+                {
+                    setup.Name = info.Name.Trim();
+                }
+
+                if (!string.IsNullOrEmpty(info?.Version))
+                {
+                    setup.Version = info.Version.Trim();
+                }
+            }
+            else
             {
                 var info = FileVersionInfo.GetVersionInfo(file.Path);
 

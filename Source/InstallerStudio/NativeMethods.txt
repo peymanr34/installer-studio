@@ -1,4 +1,10 @@
 LoadLibraryExW
 EnumResourceNamesW
 MsiVerifyPackageW
+MsiOpenDatabaseW
+MsiDatabaseOpenViewW
+MsiViewExecute
+MsiViewFetch
+MsiRecordGetStringW
+MsiCloseHandle
 GetDpiForWindow

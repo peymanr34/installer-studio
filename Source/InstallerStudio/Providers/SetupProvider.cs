@@ -14,6 +14,13 @@ namespace InstallerStudio.Providers
             Msi,
         }
 
+        public class SetupInfo
+        {
+            public string Name { get; set; }
+
+            public string Version { get; set; }
+        }
+
         public static SetupType GetSetupType(string filePath)
         {
             var extension = Path.GetExtension(filePath);
