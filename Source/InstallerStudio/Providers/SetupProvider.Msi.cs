@@ -72,8 +72,10 @@ namespace InstallerStudio.Providers
 
                     fixed (char* pBuffer = buffer)
                     {
-                        result = PInvoke.MsiRecordGetString(hRecord, 1, new PWSTR(pBuffer), &cchValueBuf);
-                        return buffer.ToString();
+                        if (PInvoke.MsiRecordGetString(hRecord, 1, new PWSTR(pBuffer), &cchValueBuf) == 0)
+                        {
+                            return buffer.ToString().TrimEnd('\0');
+                        }
                     }
                 }
             }
