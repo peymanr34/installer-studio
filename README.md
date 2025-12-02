@@ -4,6 +4,7 @@ Combine multiple installers for silent installation.
 
 ## Features
 
+- Silent switch detection for Inno Setup, Nullsoft, WiX Burn and MSI installers
 - Supports x86, x64 and ARM64 specific installers
 - Powered by [Inno Setup](https://jrsoftware.org/isinfo.php)
 
