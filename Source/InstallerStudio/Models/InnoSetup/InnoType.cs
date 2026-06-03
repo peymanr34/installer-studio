@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace InstallerStudio.Providers.InnoSetup.Models
+namespace InstallerStudio.Models
 {
     public class InnoType
     {

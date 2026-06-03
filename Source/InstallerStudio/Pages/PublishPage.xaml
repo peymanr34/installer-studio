@@ -31,6 +31,16 @@
                     <TextBlock Text="Publish" />
                 </StackPanel>
             </Button>
+            <TextBlock
+                Margin="5"
+                VerticalAlignment="Center"
+                Text="Compiler:" />
+            <ComboBox
+                Margin="5"
+                HorizontalAlignment="Stretch"
+                DisplayMemberPath="Name"
+                ItemsSource="{x:Bind ViewModel.Compilers}"
+                SelectedItem="{x:Bind ViewModel.SelectedCompiler, Mode=TwoWay}" />
             <CheckBox
                 Margin="5"
                 Content="Open folder when finished"

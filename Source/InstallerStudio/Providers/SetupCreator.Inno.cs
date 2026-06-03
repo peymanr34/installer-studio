@@ -4,13 +4,18 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using InstallerStudio.Data.Models;
-using InstallerStudio.Providers.InnoSetup.Models;
+using InstallerStudio.Models;
 
 namespace InstallerStudio.Providers
 {
-    public static class InnoCreator
+    public static partial class SetupCreator
     {
-        public static InnoScript CreateSetupScript(Project project)
+        public static string CreateInnoSetupScript(Project project)
+        {
+            return CreateInnoSetupScriptImpl(project).AsString();
+        }
+
+        private static InnoScript CreateInnoSetupScriptImpl(Project project)
         {
             var script = new InnoScript();
 

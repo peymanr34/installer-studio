@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -54,16 +53,6 @@ namespace InstallerStudio.Providers
             };
 
             return picker;
-        }
-
-        public static async Task<StorageFile> WriteLinesTemporaryAsync(string fileName, IEnumerable<string> lines)
-        {
-            var temporaryFolder = ApplicationData.Current.TemporaryFolder;
-            var scriptFile = await temporaryFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-
-            await FileIO.WriteLinesAsync(scriptFile, lines);
-
-            return scriptFile;
         }
 
         public static async Task CopyFileAsync(StorageFile file, StorageFolder destination)

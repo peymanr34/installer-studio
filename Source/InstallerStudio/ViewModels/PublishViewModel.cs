@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,12 +9,13 @@ using CliWrap;
 using CliWrap.EventStream;
 using InstallerStudio.Data;
 using InstallerStudio.Data.Models;
+using InstallerStudio.Models;
 using InstallerStudio.Providers;
-using InstallerStudio.Providers.InnoSetup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.UI.Xaml.Controls;
 using MvvmGen;
 using Windows.Storage;
+using Windows.System;
 
 namespace InstallerStudio.ViewModels
 {
@@ -24,6 +25,12 @@ namespace InstallerStudio.ViewModels
     public partial class PublishViewModel
     {
         private readonly StringBuilder _outputBuilder = new();
+
+        [Property]
+        private ObservableCollection<CompilerInfo> _compilers;
+
+        [Property]
+        private CompilerInfo _selectedCompiler;
 
         [Property]
         [PropertyCallMethod(nameof(SaveSettings))]
@@ -37,6 +44,9 @@ namespace InstallerStudio.ViewModels
 
         public void Load()
         {
+            _compilers = new(CompilerProvider.GetSupportedCompilers());
+            _selectedCompiler = _compilers.First();
+
             LoadSettings();
         }
 
@@ -51,15 +61,15 @@ namespace InstallerStudio.ViewModels
                 .First(x => x.Id == ProjectId);
 
             // Get the compiler.
-            var required = new Version(6, 3, 0);
-            var compiler = InnoProvider.GetCompiler();
+            var compilers = CompilerProvider.GetInstalledCompilers(SelectedCompiler.CompilerType);
+            var compiler = compilers.FirstOrDefault();
 
-            if (!File.Exists(compiler?.Path) || compiler.Version < required)
+            if (!File.Exists(compiler?.Path) || compiler.Version < SelectedCompiler.SupportedVersion)
             {
                 var dialog = new ContentDialog
                 {
-                    Title = "Inno Setup 6.3+ is required",
-                    Content = "To publish the setup, you need to download and install Inno Setup separately. Would you like to download it now?",
+                    Title = $"{SelectedCompiler.Name} {SelectedCompiler.SupportedVersion.ToString(2)} or later is required",
+                    Content = $"To publish the setup, you need to download and install {SelectedCompiler.Name} separately. Would you like to download it now?",
                     DefaultButton = ContentDialogButton.Primary,
                     PrimaryButtonText = "Download",
                     CloseButtonText = "Cancel",
@@ -71,15 +81,9 @@ namespace InstallerStudio.ViewModels
                     dialog.Content += $"\n\nInstalled: {compiler.Version}";
                 }
 
-                var result = await dialog.ShowAsync();
-
-                if (result == ContentDialogResult.Primary)
+                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
                 {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "https://jrsoftware.org/download.php/is.exe",
-                        UseShellExecute = true,
-                    });
+                    await Launcher.LaunchUriAsync(new Uri(SelectedCompiler.DownloadUrl));
                 }
 
                 return;
@@ -114,7 +118,10 @@ namespace InstallerStudio.ViewModels
 
             try
             {
-                var success = await PublishAsync(project, file.Path, compiler.Path);
+                var storageFile = await StorageFile.GetFileFromPathAsync(file.Path);
+                var storageFolder = await storageFile.GetParentAsync();
+
+                var success = await PublishAsync(project, storageFile, storageFolder, SelectedCompiler, compiler.Path);
 
                 if (success && OpenFolderOnPublished)
                 {
@@ -135,34 +142,32 @@ namespace InstallerStudio.ViewModels
         }
 
         [CommandInvalidate(nameof(IsExecuting))]
+        [CommandInvalidate(nameof(SelectedCompiler))]
         public bool CanExecute()
-            => !IsExecuting;
+            => !IsExecuting && SelectedCompiler is not null;
 
-        private async Task<bool> PublishAsync(Project project, string filePath, string compiler)
+        private async Task<bool> PublishAsync(Project project, StorageFile file, StorageFolder directory, CompilerInfo compilerInfo, string compilerPath)
         {
-            var file = await StorageFile.GetFileFromPathAsync(filePath);
-            var directory = await file.GetParentAsync();
-
             // Create and save the script to a temporary file.
-            var script = InnoCreator.CreateSetupScript(project);
-            var scriptLines = InnoProvider.GetSetupScript(script);
-            var scriptFile = await FileProvider.WriteLinesTemporaryAsync("script.iss", scriptLines);
+            var script = SetupCreator.CreateScript(project, compilerInfo.CompilerType);
+            var scriptFile = await ApplicationData.Current.TemporaryFolder
+                .CreateFileAsync($"script{compilerInfo.ScriptFileExtension}", CreationCollisionOption.ReplaceExisting);
+
+            await FileIO.WriteTextAsync(scriptFile, script);
 
 #if DEBUG
-            Process.Start(new ProcessStartInfo
-            {
-                UseShellExecute = true,
-                FileName = scriptFile.Path,
-            });
+            await Launcher.LaunchFileAsync(scriptFile);
 #endif
             var errorBuilder = new StringBuilder();
 
             // Compile the script.
-            var command = Cli.Wrap(compiler)
+            var arguments = CompilerProvider.GetArgumentsForScript(scriptFile, file, directory, compilerInfo.CompilerType);
+
+            var command = Cli.Wrap(compilerPath)
                 .WithWorkingDirectory(directory.Path)
                 .WithValidation(CommandResultValidation.None)
                 .WithStandardErrorPipe(PipeTarget.ToStringBuilder(errorBuilder))
-                .WithArguments([scriptFile.Path, $"/O{directory.Path}", $"/F{file.DisplayName}"]);
+                .WithArguments(arguments);
 
             await foreach (var commandEvent in command.ListenAsync())
             {

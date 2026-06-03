@@ -1,6 +1,10 @@
-﻿using InstallerStudio.Providers.InnoSetup.Models;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using InstallerStudio.Models;
 
-namespace InstallerStudio.Providers.InnoSetup
+namespace InstallerStudio
 {
     public static class InnoExtensions
     {
@@ -77,6 +81,61 @@ namespace InstallerStudio.Providers.InnoSetup
             }
 
             return result;
+        }
+
+        public static string AsString(this InnoScript item)
+        {
+            var builder = new StringBuilder();
+
+            foreach (var line in item.AsLines())
+            {
+                builder.AppendLine(line);
+            }
+
+            return builder.ToString();
+        }
+
+        private static ReadOnlyCollection<string> AsLines(this InnoScript item)
+        {
+            var items = new List<string>();
+
+            if (item.Setup.Count != 0)
+            {
+                items.Add("[Setup]");
+                items.AddRange(item.Setup.Select(setup => $"{setup.Key}={setup.Value}"));
+            }
+
+            if (item.Languages.Count != 0)
+            {
+                items.Add("[Languages]");
+                items.AddRange(item.Languages.Select(x => x.AsString()));
+            }
+
+            if (item.Types.Count != 0)
+            {
+                items.Add("[Types]");
+                items.AddRange(item.Types.Select(x => x.AsString()));
+            }
+
+            if (item.Components.Count != 0)
+            {
+                items.Add("[Components]");
+                items.AddRange(item.Components.Select(x => x.AsString()));
+            }
+
+            if (item.Files.Count != 0)
+            {
+                items.Add("[Files]");
+                items.AddRange(item.Files.Select(x => x.AsString()));
+            }
+
+            if (item.Runs.Count != 0)
+            {
+                items.Add("[Run]");
+                items.AddRange(item.Runs.Select(x => x.AsString()));
+            }
+
+            return items.AsReadOnly();
         }
     }
 }

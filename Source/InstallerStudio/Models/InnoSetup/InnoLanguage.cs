@@ -1,4 +1,4 @@
-﻿namespace InstallerStudio.Providers.InnoSetup.Models
+﻿namespace InstallerStudio.Models
 {
     public class InnoLanguage
     {
