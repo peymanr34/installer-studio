@@ -118,8 +118,6 @@ namespace InstallerStudio.Providers
         {
             var item = new InnoRun
             {
-                FileName = $"{location}\\{setup.GetIdentifier()}\\{Path.GetFileName(setup.FilePath)}",
-                Parameters = setup.Arguments,
                 StatusMsg = $"Installing {setup.Name}...",
             };
 
@@ -128,10 +126,33 @@ namespace InstallerStudio.Providers
             item.Components.Add(setup.GetIdentifier());
 
             var extension = Path.GetExtension(setup.FilePath);
+            var destination = $"{location}\\{setup.GetIdentifier()}\\{Path.GetFileName(setup.FilePath)}";
 
             if (extension.Equals(".msi", StringComparison.OrdinalIgnoreCase))
             {
-                item.Flags.Add("shellexec");
+                item.FileName = "msiexec";
+                item.Parameters = "/i";
+            }
+            else if (extension.Equals(".msix", StringComparison.OrdinalIgnoreCase) ||
+                extension.Equals(".appx", StringComparison.OrdinalIgnoreCase))
+            {
+                item.FileName = "powershell";
+                item.Parameters = "Add-AppxPackage -Path";
+            }
+            else
+            {
+                item.FileName = destination;
+            }
+
+            // If the file is not directly executed, then add the executable as a parameter.
+            if (item.FileName != destination)
+            {
+                item.Parameters += $" \"\"{destination}\"\"";
+            }
+
+            if (!string.IsNullOrEmpty(setup.Arguments))
+            {
+                item.Parameters = $"{item.Parameters} {setup.Arguments}".Trim();
             }
 
             return item;

@@ -98,6 +98,11 @@ namespace InstallerStudio.Providers
             {
                 item += $"\"msiexec\" /i ";
             }
+            else if (extension.Equals(".msix", StringComparison.OrdinalIgnoreCase) ||
+                extension.Equals(".appx", StringComparison.OrdinalIgnoreCase))
+            {
+                item += "\"powershell\" Add-AppxPackage -Path ";
+            }
 
             item += $"\"{destination}\"";
 

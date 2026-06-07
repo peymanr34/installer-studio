@@ -2,6 +2,6 @@
 {
     internal static class Constants
     {
-        public static readonly string[] SetupExtensions = [".exe", ".msi", ".cmd", ".bat"];
+        public static readonly string[] SetupExtensions = [".exe", ".msi", ".msix", ".appx", ".cmd", ".bat"];
     }
 }
