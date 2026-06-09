@@ -92,7 +92,7 @@ namespace InstallerStudio.Providers
 
                 component.Types.Add(full.Name);
                 component.Types.Add(custom.Name);
-                component.Checks.AddRange(GetConditions(item));
+                component.Checks.Add(string.Join(" or ", GetConditions(item)));
 
                 script.Components.Add(component);
 
@@ -121,7 +121,6 @@ namespace InstallerStudio.Providers
                 StatusMsg = $"Installing {setup.Name}...",
             };
 
-            item.Checks.AddRange(GetConditions(setup));
             item.Flags.Add("waituntilterminated");
             item.Components.Add(setup.GetIdentifier());
 
@@ -178,7 +177,6 @@ namespace InstallerStudio.Providers
 
             item.Flags.Add("ignoreversion");
             item.Components.Add(setup.GetIdentifier());
-            item.Checks.AddRange(GetConditions(setup));
 
             return item;
         }
@@ -198,7 +196,6 @@ namespace InstallerStudio.Providers
             item.Flags.Add("createallsubdirs");
 
             item.Components.Add(setup.GetIdentifier());
-            item.Checks.AddRange(GetConditions(setup));
 
             return item;
         }
