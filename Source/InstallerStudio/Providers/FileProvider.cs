@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Windows.Storage.Pickers;
@@ -76,17 +75,6 @@ namespace InstallerStudio.Providers
                 var newDestination = await destination.CreateFolderAsync(folder.Name);
                 await CopyFolderAsync(folder, newDestination);
             }
-        }
-
-        public static void OpenDirectorySelectFile(string filePath)
-        {
-            var info = new ProcessStartInfo
-            {
-                FileName = "explorer",
-                Arguments = $"/select,\"{filePath}\"",
-            };
-
-            Process.Start(info);
         }
     }
 }

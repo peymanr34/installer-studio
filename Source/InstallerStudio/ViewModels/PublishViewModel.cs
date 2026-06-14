@@ -125,7 +125,7 @@ namespace InstallerStudio.ViewModels
 
                 if (success && OpenFolderOnPublished)
                 {
-                    FileProvider.OpenDirectorySelectFile(file.Path);
+                    await Launcher.LaunchFolderAsync(storageFolder, new FolderLauncherOptions { ItemsToSelect = { storageFile } });
                 }
 
                 UpdateOutput($"\n{(success ? "Finished." : "Failed.")}");

@@ -11,6 +11,7 @@ using InstallerStudio.Providers;
 using Microsoft.EntityFrameworkCore;
 using MvvmGen;
 using Windows.Storage;
+using Windows.System;
 
 namespace InstallerStudio.ViewModels
 {
@@ -201,14 +202,19 @@ namespace InstallerStudio.ViewModels
         }
 
         [Command(CanExecuteMethod = nameof(CanOpenFolder))]
-        public void OpenFolder(object args)
+        public async Task OpenFolder(object args)
         {
-            if (!File.Exists(SelectedItem.FilePath))
+            try
+            {
+                var file = await StorageFile.GetFileFromPathAsync(SelectedItem.FilePath);
+                var folder = await file.GetParentAsync();
+
+                await Launcher.LaunchFolderAsync(folder, new FolderLauncherOptions { ItemsToSelect = { file } });
+            }
+            catch (FileNotFoundException)
             {
                 return;
             }
-
-            FileProvider.OpenDirectorySelectFile(SelectedItem.FilePath);
         }
 
         [CommandInvalidate(nameof(SelectedItem))]
