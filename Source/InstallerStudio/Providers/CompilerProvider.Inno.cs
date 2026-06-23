@@ -30,10 +30,12 @@ namespace InstallerStudio.Providers
 
         private static IEnumerable<string> GetInnoSetupRegistryKeyPaths()
         {
-            // Inno Setup 7 (64-bit) on 64-bit Windows or Inno Setup 7 (32-bit) on 32-bit Windows.
+            // Inno Setup 7 (64-bit) on 64-bit Windows. 
             yield return GetCompilerRegistryKeyPath("Inno Setup 7_is1");
+            // Inno Setup 7 (32-bit) on 32-bit Windows.
+            yield return GetCompilerRegistryKeyPath("Inno Setup 7 (32-bit)_is1");
             // Inno Setup 7 (32-bit) on 64-bit Windows.
-            yield return GetCompilerRegistryKeyPath("Inno Setup 7_is1", true);
+            yield return GetCompilerRegistryKeyPath("Inno Setup 7 (32-bit)_is1", true);
             // Inno Setup 6 is 32-bit only.
             yield return GetCompilerRegistryKeyPath("Inno Setup 6_is1", Environment.Is64BitOperatingSystem);
         }
