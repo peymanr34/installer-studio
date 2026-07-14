@@ -30,19 +30,6 @@ namespace InstallerStudio.Providers
             return picker;
         }
 
-        public static FileSavePicker GetFileSavePicker(string suggestedFileName)
-        {
-            var picker = new FileSavePicker(App.MainWindow.AppWindow.Id)
-            {
-                SuggestedFileName = suggestedFileName,
-                SuggestedStartLocation = PickerLocationId.Desktop,
-            };
-
-            picker.FileTypeChoices.Add("Setup", [".exe"]);
-
-            return picker;
-        }
-
         public static FolderPicker GetFolderPicker()
         {
             var picker = new FolderPicker(App.MainWindow.AppWindow.Id)

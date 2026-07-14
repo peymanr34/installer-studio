@@ -13,6 +13,7 @@ using InstallerStudio.Models;
 using InstallerStudio.Providers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.Storage.Pickers;
 using MvvmGen;
 using Windows.Storage;
 using Windows.System;
@@ -106,7 +107,14 @@ namespace InstallerStudio.ViewModels
             }
 
             // Get the destination file.
-            var picker = FileProvider.GetFileSavePicker($"Setup-v{project.Version}");
+            var picker = new FileSavePicker(App.MainWindow.AppWindow.Id)
+            {
+                SuggestedFileName = $"Setup-v{project.Version}",
+                SuggestedStartLocation = PickerLocationId.Desktop,
+            };
+
+            picker.FileTypeChoices.Add("Setup", [".exe"]);
+
             var file = await picker.PickSaveFileAsync();
 
             if (file is null)
@@ -118,13 +126,13 @@ namespace InstallerStudio.ViewModels
 
             try
             {
-                var storageFile = await StorageFile.GetFileFromPathAsync(file.Path);
-                var storageFolder = await storageFile.GetParentAsync();
-
-                var success = await PublishAsync(project, storageFile, storageFolder, SelectedCompiler, compiler.Path);
+                var success = await PublishAsync(project, file.Path, SelectedCompiler, compiler.Path);
 
                 if (success && OpenFolderOnPublished)
                 {
+                    var storageFile = await StorageFile.GetFileFromPathAsync(file.Path);
+                    var storageFolder = await storageFile.GetParentAsync();
+
                     await Launcher.LaunchFolderAsync(storageFolder, new FolderLauncherOptions { ItemsToSelect = { storageFile } });
                 }
 
@@ -146,8 +154,10 @@ namespace InstallerStudio.ViewModels
         public bool CanExecute()
             => !IsExecuting && SelectedCompiler is not null;
 
-        private async Task<bool> PublishAsync(Project project, StorageFile file, StorageFolder directory, CompilerInfo compilerInfo, string compilerPath)
+        private async Task<bool> PublishAsync(Project project, string outputFilePath, CompilerInfo compilerInfo, string compilerPath)
         {
+            var outputFolderPath = Path.GetDirectoryName(outputFilePath);
+
             // Create and save the script to a temporary file.
             var script = SetupCreator.CreateScript(project, compilerInfo.CompilerType);
             var scriptFile = await ApplicationData.Current.TemporaryFolder
@@ -161,10 +171,10 @@ namespace InstallerStudio.ViewModels
             var errorBuilder = new StringBuilder();
 
             // Compile the script.
-            var arguments = CompilerProvider.GetArgumentsForScript(scriptFile, file, directory, compilerInfo.CompilerType);
+            var arguments = CompilerProvider.GetArgumentsForScript(scriptFile, outputFilePath, compilerInfo.CompilerType);
 
             var command = Cli.Wrap(compilerPath)
-                .WithWorkingDirectory(directory.Path)
+                .WithWorkingDirectory(outputFolderPath)
                 .WithValidation(CommandResultValidation.None)
                 .WithStandardErrorPipe(PipeTarget.ToStringBuilder(errorBuilder))
                 .WithArguments(arguments);
@@ -181,16 +191,19 @@ namespace InstallerStudio.ViewModels
                 }
             }
 
-            if (project.SetupType == SetupType.External)
+            var result = errorBuilder.Length == 0;
+
+            if (result && project.SetupType == SetupType.External)
             {
-                await CopyExternalFilesAsync(project, directory);
+                await CopyExternalFilesAsync(project, outputFolderPath);
             }
 
-            return errorBuilder.Length == 0;
+            return result;
         }
 
-        private async Task CopyExternalFilesAsync(Project project, StorageFolder directory)
+        private async Task CopyExternalFilesAsync(Project project, string outputFolderPath)
         {
+            var directory = await StorageFolder.GetFolderFromPathAsync(outputFolderPath);
             var external = await directory.CreateFolderAsync("Files", CreationCollisionOption.OpenIfExists);
 
             UpdateOutput($"\nCopying external files to: {external.Path}");

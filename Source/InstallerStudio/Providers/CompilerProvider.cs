@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using InstallerStudio.Models;
 using Windows.Storage;
 
@@ -40,20 +41,20 @@ namespace InstallerStudio.Providers
             _ => throw new NotImplementedException(),
         };
 
-        public static ReadOnlyCollection<string> GetArgumentsForScript(StorageFile script, StorageFile file, StorageFolder folder, CompilerType compilerType)
+        public static ReadOnlyCollection<string> GetArgumentsForScript(StorageFile script, string outputFilePath, CompilerType compilerType)
         {
             var items = new List<string>();
 
             if (compilerType == CompilerType.InnoSetup)
             {
                 items.Add(script.Path); // Script file name.
-                items.Add($"/O{folder.Path}"); // Output files to specified path.
-                items.Add($"/F{file.DisplayName}"); // Specifies an output filename.
+                items.Add($"/O{Path.GetDirectoryName(outputFilePath)}"); // Output files to specified path.
+                items.Add($"/F{Path.GetFileNameWithoutExtension(outputFilePath)}"); // Specifies an output filename.
             }
             else if (compilerType == CompilerType.Nullsoft)
             {
                 items.Add("/V3"); // Set the verbosity of the output.
-                items.Add($"/DOutFile={file.Path}"); // Set the output filename variable.
+                items.Add($"/DOutFile={outputFilePath}"); // Set the output filename variable.
                 items.Add(script.Path); // Should always be the last argument.
             }
             else
