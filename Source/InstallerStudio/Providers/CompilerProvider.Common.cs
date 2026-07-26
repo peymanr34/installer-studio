@@ -18,7 +18,7 @@ namespace InstallerStudio.Providers
                 };
 
                 var displayVersion = key.GetValue("DisplayVersion") as string;
-                int index = displayVersion.IndexOf('-');
+                int index = displayVersion.IndexOfAny(['-', ' ']);
 
                 if (index >= 0)
                 {
