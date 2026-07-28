@@ -3,6 +3,8 @@ using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Windows.Graphics;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 using WinRT.Interop;
 
 namespace InstallerStudio
@@ -28,7 +30,7 @@ namespace InstallerStudio
         private SizeInt32 GetScaledWindowSize(int height, int width)
         {
             var hwnd = WindowNative.GetWindowHandle(this);
-            var dpi = NativeMethods.GetDpiForWindow(hwnd);
+            var dpi = PInvoke.GetDpiForWindow(new HWND(hwnd));
 
             var scale = dpi / 96d;
 
