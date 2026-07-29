@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -126,38 +125,21 @@ namespace InstallerStudio.ViewModels
             var setupType = SetupProvider.GetSetupType(file.Path);
             setup.Arguments = SetupProvider.GetSilentSwitch(setupType);
 
-            if (setupType == SetupProvider.SetupType.Msi)
+            var info = SetupProvider.GetSetupInfo(file.Path, setupType);
+
+            if (!string.IsNullOrEmpty(info?.Name))
             {
-                var info = SetupProvider.GetMsiInfo(file.Path);
-
-                if (!string.IsNullOrEmpty(info?.Name))
-                {
-                    setup.Name = info.Name.Trim();
-                }
-
-                if (!string.IsNullOrEmpty(info?.Version))
-                {
-                    setup.Version = info.Version.Trim();
-                }
+                setup.Name = info.Name.Trim();
             }
-            else
+
+            if (!string.IsNullOrEmpty(info?.Version))
             {
-                var info = FileVersionInfo.GetVersionInfo(file.Path);
+                setup.Version = info.Version.Trim();
+            }
 
-                if (!string.IsNullOrEmpty(info.ProductName))
-                {
-                    setup.Name = info.ProductName.Trim();
-                }
-
-                if (!string.IsNullOrEmpty(info.ProductVersion))
-                {
-                    setup.Version = info.ProductVersion.Trim();
-                }
-
-                if (!string.IsNullOrEmpty(info.FileDescription))
-                {
-                    setup.Description = info.FileDescription.Trim();
-                }
+            if (!string.IsNullOrEmpty(info?.Description))
+            {
+                setup.Description = info.Description.Trim();
             }
 
             Context.Setups.Add(setup);

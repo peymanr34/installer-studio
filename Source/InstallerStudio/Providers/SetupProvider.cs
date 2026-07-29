@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace InstallerStudio.Providers
@@ -19,6 +20,25 @@ namespace InstallerStudio.Providers
             public string Name { get; set; }
 
             public string Version { get; set; }
+
+            public string Description { get; set; }
+        }
+
+        public static SetupInfo GetSetupInfo(string filePath, SetupType setupType)
+        {
+            if (setupType == SetupType.Msi)
+            {
+                return GetMsiInfo(filePath);
+            }
+
+            var info = FileVersionInfo.GetVersionInfo(filePath);
+
+            return new SetupInfo
+            {
+                Name = info.ProductName,
+                Version = info.ProductVersion,
+                Description = info.FileDescription,
+            };
         }
 
         public static SetupType GetSetupType(string filePath)
