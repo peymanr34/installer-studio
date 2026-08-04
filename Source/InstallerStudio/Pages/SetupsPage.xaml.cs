@@ -6,7 +6,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Services.Store;
-using Windows.Storage;
 using WinRT.Interop;
 
 namespace InstallerStudio.Pages
@@ -84,7 +83,7 @@ namespace InstallerStudio.Pages
             if (e.DataView.Contains(StandardDataFormats.StorageItems))
             {
                 var items = await e.DataView.GetStorageItemsAsync();
-                await ViewModel.CreateRange(items.Cast<StorageFile>());
+                await ViewModel.CreateRange(items.Select(x => x.Path));
             }
         }
     }

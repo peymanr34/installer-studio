@@ -85,12 +85,32 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Orientation="Horizontal">
-                <Button
+                <SplitButton
                     Margin="5"
                     Command="{x:Bind ViewModel.CreateCommand}"
                     ToolTipService.ToolTip="Add a new item">
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem
+                                Command="{x:Bind ViewModel.CreateByFolderCommand}"
+                                Text="Add new items by folder"
+                                ToolTipService.ToolTip="Adds the new items by selecting a folder">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="NewFolder" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem
+                                Command="{x:Bind ViewModel.CreateWithFolderCommand}"
+                                Text="Add a new item with the folder"
+                                ToolTipService.ToolTip="Adds a new item along with the containing folder as additional files">
+                                <MenuFlyoutItem.Icon>
+                                    <SymbolIcon Symbol="OpenFile" />
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
                     <SymbolIcon Symbol="Add" />
-                </Button>
+                </SplitButton>
                 <Button
                     Margin="5"
                     Command="{x:Bind ViewModel.RemoveCommand}"

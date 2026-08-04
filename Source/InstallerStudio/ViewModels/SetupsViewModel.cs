@@ -8,6 +8,7 @@ using InstallerStudio.Data;
 using InstallerStudio.Data.Models;
 using InstallerStudio.Providers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.UI.Xaml.Media.Imaging;
 using MvvmGen;
 using Windows.Storage;
 using Windows.System;
@@ -40,7 +41,7 @@ namespace InstallerStudio.ViewModels
             }
 
             var items = query
-                .Select(x => ToViewModel(x))
+                .Select(x => ToViewModel(x, null))
                 .AsNoTracking()
                 .ToList();
 
@@ -67,6 +68,60 @@ namespace InstallerStudio.ViewModels
             await CreateRange(files.Select(x => x.Path));
         }
 
+        [Command(CanExecuteMethod = nameof(CanCreate))]
+        public async Task CreateByFolder()
+        {
+            var picker = FileProvider.GetFolderPicker();
+            var result = await picker.PickSingleFolderAsync();
+
+            if (result is null)
+            {
+                return;
+            }
+
+            var folder = await StorageFolder.GetFolderFromPathAsync(result.Path);
+            var files = await folder.GetFilesAsync();
+
+            await CreateRange(files.Select(x => x.Path));
+        }
+
+        [Command(CanExecuteMethod = nameof(CanCreate))]
+        public async Task CreateWithFolder()
+        {
+            var picker = FileProvider.GetFileOpenPicker(Constants.SetupExtensions);
+            var result = await picker.PickSingleFileAsync();
+
+            if (result is null || IsSetupAlreadyExists(result.Path))
+            {
+                return;
+            }
+
+            var setup = GetSetup(result.Path);
+
+            var file = await StorageFile.GetFileFromPathAsync(setup.FilePath);
+            var folder = await file.GetParentAsync();
+
+            var items = await folder.GetItemsAsync();
+
+            setup.Additionals ??= [];
+
+            foreach (var item in items.Where(x => x.Path != setup.FilePath))
+            {
+                var additional = new SetupAdditional
+                {
+                    Path = item.Path,
+                    IsDirectory = item.IsOfType(StorageItemTypes.Folder),
+                };
+
+                setup.Additionals.Add(additional);
+            }
+
+            Context.Setups.Add(setup);
+            Context.SaveChanges();
+
+            await PreviewSetup(setup);
+        }
+
         [CommandInvalidate(nameof(IsExecuting))]
         public bool CanCreate()
         {
@@ -79,77 +134,22 @@ namespace InstallerStudio.ViewModels
 
             foreach (var file in files)
             {
-                var storageFile = await StorageFile.GetFileFromPathAsync(file);
-                await CreateSetup(storageFile);
-            }
+                var extension = Path.GetExtension(file);
 
-            IsExecuting = false;
-        }
-
-        public async Task CreateRange(IEnumerable<StorageFile> files)
-        {
-            IsExecuting = true;
-
-            foreach (var file in files)
-            {
-                if (FileProvider.IsExtensionSupported(file.FileType))
+                if (!FileProvider.IsExtensionSupported(extension) || IsSetupAlreadyExists(file))
                 {
-                    await CreateSetup(file);
+                    continue;
                 }
+
+                var setup = GetSetup(file);
+
+                Context.Setups.Add(setup);
+                Context.SaveChanges();
+
+                await PreviewSetup(setup);
             }
 
             IsExecuting = false;
-        }
-
-        private async Task CreateSetup(StorageFile file)
-        {
-            var existing = Context.Setups
-                .FirstOrDefault(x => x.ProjectId == ProjectId && x.FilePath == file.Path);
-
-            if (existing is not null)
-            {
-                return;
-            }
-
-            var setup = new Setup
-            {
-                Name = file.Name,
-                FilePath = file.Path,
-                ProjectId = ProjectId,
-            };
-
-            setup.IsX86 = SetupProvider.IsX86Setup(file.Name);
-            setup.IsX64 = SetupProvider.IsX64Setup(file.Name);
-            setup.IsArm64 = SetupProvider.IsArm64Setup(file.Name);
-
-            var setupType = SetupProvider.GetSetupType(file.Path);
-            setup.Arguments = SetupProvider.GetSilentSwitch(setupType);
-
-            var info = SetupProvider.GetSetupInfo(file.Path, setupType);
-
-            if (!string.IsNullOrEmpty(info?.Name))
-            {
-                setup.Name = info.Name.Trim();
-            }
-
-            if (!string.IsNullOrEmpty(info?.Version))
-            {
-                setup.Version = info.Version.Trim();
-            }
-
-            if (!string.IsNullOrEmpty(info?.Description))
-            {
-                setup.Description = info.Description.Trim();
-            }
-
-            Context.Setups.Add(setup);
-            Context.SaveChanges();
-
-            var item = ToViewModel(setup);
-            item.Icon = await CacheProvider.GetCachedIconOrDefaultAsync(item.FilePath);
-
-            Items.Add(item);
-            OnPropertyChanged(nameof(Items));
         }
 
         [Command(CanExecuteMethod = nameof(CanRemove))]
@@ -205,6 +205,61 @@ namespace InstallerStudio.ViewModels
             return SelectedItem is not null;
         }
 
+        private bool IsSetupAlreadyExists(string filePath)
+        {
+            var existing = Context.Setups
+                .FirstOrDefault(x => x.ProjectId == ProjectId && x.FilePath == filePath);
+
+            return existing is not null;
+        }
+
+        private Setup GetSetup(string filePath)
+        {
+            var fileName = Path.GetFileName(filePath);
+
+            var setup = new Setup
+            {
+                Name = fileName,
+                FilePath = filePath,
+                ProjectId = ProjectId,
+            };
+
+            setup.IsX86 = SetupProvider.IsX86Setup(fileName);
+            setup.IsX64 = SetupProvider.IsX64Setup(fileName);
+            setup.IsArm64 = SetupProvider.IsArm64Setup(fileName);
+
+            var setupType = SetupProvider.GetSetupType(filePath);
+            setup.Arguments = SetupProvider.GetSilentSwitch(setupType);
+
+            var info = SetupProvider.GetSetupInfo(filePath, setupType);
+
+            if (!string.IsNullOrEmpty(info?.Name))
+            {
+                setup.Name = info.Name.Trim();
+            }
+
+            if (!string.IsNullOrEmpty(info?.Version))
+            {
+                setup.Version = info.Version.Trim();
+            }
+
+            if (!string.IsNullOrEmpty(info?.Description))
+            {
+                setup.Description = info.Description.Trim();
+            }
+
+            return setup;
+        }
+
+        private async Task PreviewSetup(Setup setup)
+        {
+            var icon = await CacheProvider.GetCachedIconOrDefaultAsync(setup.FilePath);
+            var item = ToViewModel(setup, icon);
+
+            Items.Add(item);
+            OnPropertyChanged(nameof(Items));
+        }
+
         private async void LoadIcons()
         {
             foreach (var item in Items)
@@ -215,7 +270,7 @@ namespace InstallerStudio.ViewModels
             OnPropertyChanged(nameof(Items));
         }
 
-        private static SetupViewModel ToViewModel(Setup model) => new()
+        private static SetupViewModel ToViewModel(Setup model, BitmapImage icon) => new()
         {
             Id = model.Id,
             Name = model.Name,
@@ -226,6 +281,7 @@ namespace InstallerStudio.ViewModels
             FilePath = model.FilePath,
             Arguments = model.Arguments,
             Description = model.Description,
+            Icon = icon,
         };
     }
 }
