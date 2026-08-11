@@ -59,8 +59,28 @@ namespace InstallerStudio.Providers
             {
                 builder.AppendLine();
                 builder.AppendLine($"Section \"{item.Name ?? item.Description}\" {item.GetIdentifier()}");
-                builder.AppendLine($"  SetOutPath \"{location}\\{item.GetIdentifier()}\"");
-                builder.AppendLine($"  File \"{item.FilePath}\"");
+
+                if (project.SetupType == SetupType.Internal)
+                {
+                    // Add the main file.
+                    builder.AppendLine($"  SetOutPath \"{location}\\{item.GetIdentifier()}\"");
+                    builder.AppendLine($"  File \"{item.FilePath}\"");
+
+                    // Add the extra files.
+                    foreach (var extra in item.Additionals)
+                    {
+                        builder.AppendLine($"  SetOutPath \"{location}\\{item.GetIdentifier()}\"");
+                        builder.Append($"  File");
+
+                        if (extra.IsDirectory)
+                        {
+                            builder.Append(" /r");
+                        }
+
+                        builder.AppendLine($" \"{extra.Path}\"");
+                    }
+                }
+
                 builder.AppendLine($"  DetailPrint \"Installing {item.Name}...\"");
                 builder.AppendLine($"  {CreateNullsoftExecute(item, location)}");
                 builder.AppendLine("SectionEnd");
