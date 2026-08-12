@@ -104,7 +104,7 @@
                                 Text="Add a new item with the folder"
                                 ToolTipService.ToolTip="Adds a new item along with the containing folder as additional files">
                                 <MenuFlyoutItem.Icon>
-                                    <SymbolIcon Symbol="OpenFile" />
+                                    <SymbolIcon Symbol="Add" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                         </MenuFlyout>

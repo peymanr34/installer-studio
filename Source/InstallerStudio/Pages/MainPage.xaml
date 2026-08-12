@@ -23,20 +23,29 @@
                 <NavigationViewItem
                     x:Name="navItemSetups"
                     Content="Setups"
-                    Icon="SyncFolder"
-                    Tag="Setups" />
+                    Tag="Setups">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xEC50;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItem
                     x:Name="navItemDetails"
                     Content="Details"
-                    Icon="NewFolder"
-                    Tag="Details" />
+                    Tag="Details">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE932;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem
                     x:Name="navItemPublish"
                     Content="Publish"
-                    Icon="OpenWith"
-                    Tag="Publish" />
+                    Tag="Publish">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xF156;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.FooterMenuItems>
             <Frame x:Name="contentFrame" />
         </NavigationView>

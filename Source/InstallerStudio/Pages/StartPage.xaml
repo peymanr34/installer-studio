@@ -44,7 +44,7 @@
             Command="{x:Bind ViewModel.CreateCommand}"
             Style="{ThemeResource AccentButtonStyle}">
             <StackPanel Orientation="Horizontal">
-                <SymbolIcon Margin="0,0,10,0" Symbol="NewWindow" />
+                <SymbolIcon Margin="0,0,10,0" Symbol="Add" />
                 <TextBlock Text="Create" />
             </StackPanel>
         </Button>
