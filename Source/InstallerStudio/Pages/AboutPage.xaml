@@ -7,9 +7,8 @@
     xmlns:local="using:InstallerStudio.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
     <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <TextBlock Text="Installer Studio" />
-        <TextBlock Text="© 2024 Peyman Mohammadi" />
+        <TextBlock Text="© 2026 Peyman Mohammadi" />
     </StackPanel>
 </Page>
