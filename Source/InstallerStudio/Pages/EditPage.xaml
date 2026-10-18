@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <Page
     x:Class="InstallerStudio.Pages.EditPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -8,16 +7,15 @@
     xmlns:local="using:InstallerStudio.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:InstallerStudio.ViewModels"
+    d:DataContext="{d:DesignInstance Type=vm:EditSetupViewModel}"
     NavigationCacheMode="Disabled"
     mc:Ignorable="d">
-
     <Page.Resources>
         <converters:BoolToObjectConverter
             x:Key="SymbolIconConverter"
             FalseValue="OpenFile"
             TrueValue="Folder" />
     </Page.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

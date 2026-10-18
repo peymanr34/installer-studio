@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <Page
     x:Class="InstallerStudio.Pages.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -6,8 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:InstallerStudio.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:InstallerStudio.ViewModels"
+    d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
     mc:Ignorable="d">
-
     <Grid>
         <NavigationView
             x:Name="navView"
