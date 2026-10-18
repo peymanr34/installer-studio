@@ -10,16 +10,16 @@ namespace InstallerStudio.Pages
         public PublishPage()
         {
             InitializeComponent();
+            ViewModel = new PublishViewModel(App.Context);
         }
 
         public PublishViewModel ViewModel { get; private set; }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            var project = e.Parameter as ProjectViewModel;
+            var project = (ProjectViewModel)e.Parameter;
 
-            ViewModel = new PublishViewModel(App.Context, project.Id);
-            ViewModel.Load();
+            ViewModel.Load(project.Id);
 
             base.OnNavigatedTo(e);
         }

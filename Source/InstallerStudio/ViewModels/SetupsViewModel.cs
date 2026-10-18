@@ -16,7 +16,6 @@ using Windows.System;
 namespace InstallerStudio.ViewModels
 {
     [ViewModel]
-    [Inject(typeof(int), PropertyName = "ProjectId")]
     [Inject(typeof(DatabaseContext), PropertyName = "Context")]
     public partial class SetupsViewModel
     {
@@ -27,12 +26,17 @@ namespace InstallerStudio.ViewModels
         private SetupViewModel _selectedItem;
 
         [Property]
+        private int _projectId;
+
+        [Property]
         private bool _isExecuting;
 
-        public void Load(string search = null)
+        public void Load(int projectId, string search = null)
         {
+            _projectId = projectId;
+
             var query = Context.Setups
-                .Where(x => x.ProjectId == ProjectId)
+                .Where(x => x.ProjectId == projectId)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))

@@ -6,7 +6,6 @@ using MvvmGen;
 namespace InstallerStudio.ViewModels
 {
     [ViewModel]
-    [Inject(typeof(int), PropertyName = "ProjectId")]
     [Inject(typeof(DatabaseContext), PropertyName = "Context")]
     public partial class EditProjectViewModel
     {
@@ -29,26 +28,29 @@ namespace InstallerStudio.ViewModels
         private SetupType _setupType;
 
         [Property]
+        private Project _project;
+
+        [Property]
         private bool _isSaved;
 
-        public void Load()
+        public void Load(int projectId)
         {
-            var model = Context.Projects
-                .First(x => x.Id == ProjectId);
+            Project = Context.Projects
+                .First(x => x.Id == projectId);
 
-            Name = model.Name;
-            Version = model.Version;
-            Website = model.Website;
-            SetupType = model.SetupType;
-            Publisher = model.Publisher;
-            Description = model.Description;
+            Name = Project.Name;
+            Version = Project.Version;
+            Website = Project.Website;
+            SetupType = Project.SetupType;
+            Publisher = Project.Publisher;
+            Description = Project.Description;
         }
 
         [Command(CanExecuteMethod = nameof(CanSave))]
         public void Save(object args)
         {
             var model = Context.Projects
-                .First(x => x.Id == ProjectId);
+                .First(x => x.Id == Project.Id);
 
             model.Name = Name;
             model.Version = Version;

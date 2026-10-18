@@ -21,17 +21,19 @@ using Windows.System;
 namespace InstallerStudio.ViewModels
 {
     [ViewModel]
-    [Inject(typeof(int), PropertyName = "ProjectId")]
     [Inject(typeof(DatabaseContext), PropertyName = "Context")]
     public partial class PublishViewModel
     {
         private readonly StringBuilder _outputBuilder = new();
 
         [Property]
-        private ObservableCollection<CompilerInfo> _compilers;
+        private ObservableCollection<CompilerInfo> _compilers = [];
 
         [Property]
         private CompilerInfo _selectedCompiler;
+
+        [Property]
+        private Project _project;
 
         [Property]
         [PropertyCallMethod(nameof(SaveSettings))]
@@ -43,23 +45,25 @@ namespace InstallerStudio.ViewModels
         public string Output
             => _outputBuilder.ToString();
 
-        public void Load()
+        public void Load(int projectId)
         {
-            _compilers = new(CompilerProvider.GetSupportedCompilers());
-            _selectedCompiler = _compilers.First();
+            Compilers.Clear();
+            Compilers.AddRange(CompilerProvider.GetSupportedCompilers());
+
+            SelectedCompiler = Compilers.First();
+
+            Project = Context.Projects
+                .Include(x => x.Setups)
+                .ThenInclude(x => x.Additionals)
+                .First(x => x.Id == projectId);
 
             LoadSettings();
         }
 
-        [Command(CanExecuteMethod = nameof(CanExecute))]
+        [Command(CanExecuteMethod = nameof(CanPublish))]
         public async Task Publish(object args)
         {
             var xamlRoot = (args as Button).XamlRoot;
-
-            var project = Context.Projects
-                .Include(x => x.Setups)
-                .ThenInclude(x => x.Additionals)
-                .First(x => x.Id == ProjectId);
 
             // Get the compiler.
             var compilers = CompilerProvider.GetInstalledCompilers(SelectedCompiler.CompilerType);
@@ -93,7 +97,7 @@ namespace InstallerStudio.ViewModels
             _outputBuilder.Clear();
 
             // Check for missing files and folders.
-            var errors = GetValidationErrors(project);
+            var errors = GetValidationErrors(Project);
 
             if (errors.Count != 0)
             {
@@ -109,7 +113,7 @@ namespace InstallerStudio.ViewModels
             // Get the destination file.
             var picker = new FileSavePicker(App.MainWindow.AppWindow.Id)
             {
-                SuggestedFileName = $"Setup-v{project.Version}",
+                SuggestedFileName = $"Setup-v{Project.Version}",
                 SuggestedStartLocation = PickerLocationId.Desktop,
             };
 
@@ -126,7 +130,7 @@ namespace InstallerStudio.ViewModels
 
             try
             {
-                var success = await PublishAsync(project, file.Path, SelectedCompiler, compiler.Path);
+                var success = await PublishAsync(Project, file.Path, SelectedCompiler, compiler.Path);
 
                 if (success && OpenFolderOnPublished)
                 {
@@ -151,8 +155,12 @@ namespace InstallerStudio.ViewModels
 
         [CommandInvalidate(nameof(IsExecuting))]
         [CommandInvalidate(nameof(SelectedCompiler))]
-        public bool CanExecute()
-            => !IsExecuting && SelectedCompiler is not null;
+        public bool CanPublish()
+        {
+            return !IsExecuting &&
+                Project is not null &&
+                SelectedCompiler is not null;
+        }
 
         private async Task<bool> PublishAsync(Project project, string outputFilePath, CompilerInfo compilerInfo, string compilerPath)
         {

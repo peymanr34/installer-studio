@@ -10,17 +10,16 @@ namespace InstallerStudio.Pages
         public EditPage()
         {
             InitializeComponent();
+            ViewModel = new EditSetupViewModel(App.Context);
         }
 
         public EditSetupViewModel ViewModel { get; private set; }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            var setup = e.Parameter as SetupViewModel;
+            var setup = (SetupViewModel)e.Parameter;
 
-            ViewModel = new EditSetupViewModel(App.Context, setup.Id);
-            ViewModel.Load();
-
+            ViewModel.Load(setup.Id);
             ViewModel.Saved += ViewModel_Saved;
 
             base.OnNavigatedTo(e);

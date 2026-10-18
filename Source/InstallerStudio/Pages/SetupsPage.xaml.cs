@@ -15,16 +15,16 @@ namespace InstallerStudio.Pages
         public SetupsPage()
         {
             InitializeComponent();
+            ViewModel = new SetupsViewModel(App.Context);
         }
 
         public SetupsViewModel ViewModel { get; private set; }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            var project = e.Parameter as ProjectViewModel;
+            var project = (ProjectViewModel)e.Parameter;
 
-            ViewModel = new SetupsViewModel(App.Context, project.Id);
-            ViewModel.Load();
+            ViewModel.Load(project.Id);
 
             base.OnNavigatedTo(e);
         }
@@ -33,7 +33,7 @@ namespace InstallerStudio.Pages
         {
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                ViewModel.Load(sender.Text);
+                ViewModel.Load(ViewModel.ProjectId, sender.Text);
             }
         }
 

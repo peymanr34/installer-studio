@@ -12,7 +12,6 @@ using MvvmGen;
 namespace InstallerStudio.ViewModels
 {
     [ViewModel]
-    [Inject(typeof(int), PropertyName = "SetupId")]
     [Inject(typeof(DatabaseContext), PropertyName = "Context")]
     public partial class EditSetupViewModel
     {
@@ -46,24 +45,27 @@ namespace InstallerStudio.ViewModels
         [Property]
         private AdditionalViewModel _selectedItem;
 
+        [Property]
+        private Setup _setup;
+
         public event EventHandler Saved;
 
-        public void Load()
+        public void Load(int setupId)
         {
-            var model = Context.Setups
+            Setup = Context.Setups
                 .Include(x => x.Additionals)
-                .First(x => x.Id == SetupId);
+                .First(x => x.Id == setupId);
 
-            Name = model.Name;
-            Version = model.Version;
-            Description = model.Description;
-            FilePath = model.FilePath;
-            Arguments = model.Arguments;
-            IsX86 = model.IsX86;
-            IsX64 = model.IsX64;
-            IsArm64 = model.IsArm64;
+            Name = Setup.Name;
+            Version = Setup.Version;
+            Description = Setup.Description;
+            FilePath = Setup.FilePath;
+            Arguments = Setup.Arguments;
+            IsX86 = Setup.IsX86;
+            IsX64 = Setup.IsX64;
+            IsArm64 = Setup.IsArm64;
 
-            var items = model.Additionals
+            var items = Setup.Additionals
                 .Select(x => ToViewModel(x))
                 .OrderByDescending(x => x.IsDirectory)
                 .ThenByDescending(x => x.Path)
@@ -85,7 +87,7 @@ namespace InstallerStudio.ViewModels
         public void Save(object args)
         {
             var model = Context.Setups
-                .First(x => x.Id == SetupId);
+                .First(x => x.Id == Setup.Id);
 
             model.Name = Name;
             model.IsX86 = IsX86;
@@ -173,7 +175,7 @@ namespace InstallerStudio.ViewModels
             var model = new SetupAdditional
             {
                 Path = path,
-                SetupId = SetupId,
+                SetupId = Setup.Id,
                 IsDirectory = directory,
             };
 

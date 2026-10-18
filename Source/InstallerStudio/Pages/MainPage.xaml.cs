@@ -13,17 +13,17 @@ namespace InstallerStudio.Pages
         public MainPage()
         {
             InitializeComponent();
+            ViewModel = new MainViewModel();
         }
 
         public MainViewModel ViewModel { get; private set; }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            ViewModel = new MainViewModel
-            {
-                SelectedItem = navItemSetups,
-                Project = (ProjectViewModel)e.Parameter,
-            };
+            var project = (ProjectViewModel)e.Parameter;
+
+            ViewModel.SelectedItem = navItemSetups;
+            ViewModel.Load(project);
 
             base.OnNavigatedTo(e);
         }

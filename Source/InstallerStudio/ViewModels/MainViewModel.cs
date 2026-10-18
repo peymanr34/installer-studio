@@ -11,5 +11,10 @@ namespace InstallerStudio.ViewModels
 
         [Property]
         private NavigationViewItem _selectedItem;
+
+        public void Load(ProjectViewModel project)
+        {
+            _project = project;
+        }
     }
 }
