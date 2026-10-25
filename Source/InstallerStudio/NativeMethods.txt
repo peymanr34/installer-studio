@@ -8,3 +8,5 @@ MsiViewFetch
 MsiRecordGetStringW
 MsiCloseHandle
 GetDpiForWindow
+CoCreateInstance
+ITaskbarList4
