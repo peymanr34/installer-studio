@@ -88,21 +88,21 @@
                 <SplitButton
                     Margin="5"
                     Command="{x:Bind ViewModel.CreateCommand}"
-                    ToolTipService.ToolTip="Add a new item">
+                    ToolTipService.ToolTip="Add Setup(s)...">
                     <SplitButton.Flyout>
                         <MenuFlyout>
                             <MenuFlyoutItem
                                 Command="{x:Bind ViewModel.CreateByFolderCommand}"
-                                Text="Add new items by folder"
-                                ToolTipService.ToolTip="Adds the new items by selecting a folder">
+                                Text="Add Setup(s) by Folder..."
+                                ToolTipService.ToolTip="Add setup files by choosing a folder">
                                 <MenuFlyoutItem.Icon>
                                     <SymbolIcon Symbol="NewFolder" />
                                 </MenuFlyoutItem.Icon>
                             </MenuFlyoutItem>
                             <MenuFlyoutItem
                                 Command="{x:Bind ViewModel.CreateWithFolderCommand}"
-                                Text="Add a new item with the folder"
-                                ToolTipService.ToolTip="Adds a new item along with the containing folder as additional files">
+                                Text="Add Setup with Folder Contents..."
+                                ToolTipService.ToolTip="Add a setup file along with its additional files and folders">
                                 <MenuFlyoutItem.Icon>
                                     <SymbolIcon Symbol="Add" />
                                 </MenuFlyoutItem.Icon>
